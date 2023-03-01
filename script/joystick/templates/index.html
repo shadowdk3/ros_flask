@@ -1,0 +1,58 @@
+<!doctype html>
+<html>
+	<head>
+		<script type = "text/javascript"
+			src = "{{ url_for('static', filename = 'js/joy.js') }}"></script>
+			
+        <link rel="stylesheet" href="{{ url_for('static',     filename='css/style.css') }}">
+		
+		<script src="https://unpkg.com/htmx.org@1.8.5"></script>
+
+        <title>ROS Flask - Joystick</title>
+	</head>
+    
+	<body>
+        <div class=label style="font-size:24px;font-weight: bold;">ROS Flask - Joystick</div><br>
+
+        <div id="joy1Div" name="joy1Div" style="width:150px;height:150px;margin:10px; display: inline-block;"></div>
+
+        <div>
+            <div class=label style="display: inline-block;font-size:16px;font-weight: bold;">angular z: </div>
+            <div class=label id="joy_x_value" style="display: inline-block;font-size:16px;font-weight: bold;">0.0</div>
+        </div>
+      
+        <div>
+            <div class=label style="display: inline-block;font-size:16px;font-weight: bold;">linear x: </div>
+            <div class=label id="joy_y_value" style="display: inline-block;font-size:16px;font-weight: bold;">0.0</div>
+        </div>
+
+		<script type="text/javascript">
+			// Create JoyStick object into the DIV 'joy1Div'
+			var Joy1 = new JoyStick('joy1Div', {}, function(stickData) {
+				var element = document.getElementById("joy1Div");
+
+				// get element name
+				var name = element.getAttribute("name");
+
+				let formData = new FormData();
+				formData.append('name', name);
+				formData.append('joy_x', stickData.x);
+				formData.append('joy_y', stickData.y);
+				
+				fetch('/', {
+					method: 'POST',
+					body: formData,
+					})
+				.then(function (response) {
+					return response.text();
+				}).then(function (text) {
+                    var json_data = JSON.parse(text);
+
+					document.getElementById("joy_x_value").innerHTML = json_data.joy_x;
+					document.getElementById("joy_y_value").innerHTML = json_data.joy_y;
+				});
+			});
+
+		</script>
+	</body>
+</html>
